@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View, ImageBackground, ColorValue, TouchableOpacity, Dimensions } from 'react-native';
 import * as SecureStore from 'expo-secure-store'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import firebaseApp from '../../config/firebase';
+import { initializeAuth, signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
+
 
 const windowWidth = Dimensions.get('window').width;
 const getFontSize = (baseFontSize) => {
-    const scaleFactor = windowWidth / 375; // 375 é a largura de referência
-    const adjustedFontSize = Math.round(baseFontSize * scaleFactor);
-    return adjustedFontSize;
+  const scaleFactor = windowWidth / 375; // 375 é a largura de referência
+  const adjustedFontSize = Math.round(baseFontSize * scaleFactor);
+  return adjustedFontSize;
 };
 
 
@@ -16,27 +18,59 @@ const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const validacao = () => {
-    if (email === '' && password === '') {
+  const logar = () => {
+    if (email == '' && password == '') {
       setResultado('Digite login e senha');
-    } else {
-      if (email === 'a' && password === '') {
-        SecureStore.setItemAsync('token', '12345');
-        AsyncStorage.setItem('user', 'Administrador');
-        setResultado('Login com sucesso');
-        navigation.navigate('Minha Poupancinha');
-      } else {
-        setResultado('Login ou senha inválidos');
-      }
     }
+
+    //Login com firebase
+    const auth = initializeAuth(firebaseApp)
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((resposta) => {
+        console.log(resposta.user)
+        SecureStore.setItemAsync('token', resposta.user.uid)
+        navigation.navigate('Minha Poupancinha')
+      }).catch((error) => {
+        console.log(error)
+        setResultado('falha ao realizar o login')
+      })
   };
+  /*
+  const loginGoogle = ({ navigation }) => {
+    const provider = new GoogleAuthProvider();
+
+    const auth = getAuth();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
+  }
+  */
+
 
   useEffect(() => {
-    SecureStore.getItemAsync('token').then((token) => {
-      if (token !== null) {
-        navigation.navigate('Minha Poupancinha');
-      }
-    });
+    SecureStore.getItemAsync('token')
+      .then((token) => {
+        if (token != null) {
+          navigation.navigate('Minha Poupancinha');
+        }
+      });
   }, []);
 
   return (
@@ -61,13 +95,13 @@ const Login = ({ navigation }) => {
         />
 
         <Text style={styles.resultado}>{resultado}</Text>
-        <TouchableOpacity style={styles.myButton} onPress={validacao}>
+        <TouchableOpacity style={styles.myButton} onPress={logar}>
           <Text style={styles.buttonText}>Logar</Text>
         </TouchableOpacity>
 
         <Text style={styles.ouText}>ou</Text>
 
-        <TouchableOpacity style={styles.googleButton}>
+        <TouchableOpacity style={styles.googleButton} /*onPress={() => loginGoogle}*/>
           <Text style={styles.buttonTextGoogle}>Entre usando Google</Text>
         </TouchableOpacity>
 
@@ -76,7 +110,7 @@ const Login = ({ navigation }) => {
           <Text style={styles.buttonTextCriar} >Crie sua conta</Text>
         </TouchableOpacity>
 
-        
+
       </View>
     </ImageBackground>
   );

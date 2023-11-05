@@ -1,5 +1,5 @@
 import axios from 'axios'
 
-const axiosConfig = axios.create({baseURL: 'http://localhost/3001/'})
+const axiosConfig = axios.create({baseURL: 'https://poupancinhaapi.onrender.com/'})
 
 export default axiosConfig

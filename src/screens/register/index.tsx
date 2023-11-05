@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { View, Text, ImageBackground, StyleSheet, Dimensions, TextInput, TouchableOpacity, ColorValue } from "react-native"
+import * as SecureStore from 'expo-secure-store'
 import axiosConfig from "../../config/axios";
+import firebaseApp from "../../config/firebase";
+import {createUserWithEmailAndPassword, initializeAuth} from 'firebase/auth'
+
 
 const windowWidth = Dimensions.get('window').width;
 const getFontSize = (baseFontSize) => {
@@ -19,33 +23,51 @@ const Register = ({ Navigation }) => {
     const [email, setEmail] = useState('');
     const [dataNascimento, setDataNascimanto] = useState('');
     const [senha, SetSenha] = useState('');
+    const [repitaSenha, SetRepitaSenha] = useState('');
     const [turma, setTurma] = useState('Teste');
     const [tipoUser, setTipoUser] = useState('Aluno');
 
-    const criarConta = async () => {
-        try {
-          const response = await axiosConfig.post('auth/register', {
-            name: nome,
-            sobreNome: sobrenome,
-            email: email,
-            dataNascimento: dataNascimento,
-            senha: senha,
-            turma: turma,
-            tipoUsuario: tipoUser, 
-          });
-    
-          // Verifique a resposta da API 
-          if (response.data) {
-            setResultado('Conta criada com sucesso.');
-            
-            Navigation.navigate('Minha Poupancinha');
-          }
-        } catch (error) {
-          // Em caso de erro
-          console.error('Erro ao criar a conta:', error);
-          setResultado('Erro ao criar a conta. Verifique seus dados e tente novamente.');
+    const criarConta = async ({navigation}) => {
+        if (nome == '' && sobrenome == '' && email == '' && dataNascimento == '' && senha == '' && repitaSenha == '' && turma == '') {
+            setResultado('Preencha todos os campos corretamente');
+            return
+        } else if (senha != repitaSenha) {
+            setResultado('As senhas digitadas estão diferentes')
+        } else {
+            try {
+                const response = await axiosConfig.post('auth/register', {
+                    name: nome,
+                    sobreNome: sobrenome,
+                    email: email,
+                    dataNascimento: dataNascimento,
+                    senha: senha,
+                    turma: turma,
+                    tipoUsuario: tipoUser,
+                });
+
+                // Verifique a resposta da API 
+                if (response.data) {
+                    setResultado('Conta criada com sucesso.');
+
+                    Navigation.navigate('Minha Poupancinha');
+                }
+            } catch (error) {
+                // Em caso de erro
+                console.error('Erro ao criar a conta:', error);
+                setResultado('Erro ao criar a conta. Verifique seus dados e tente novamente.');
+            }
+            const auth = initializeAuth(firebaseApp)
+            createUserWithEmailAndPassword(auth, email,senha)
+                .then((resposta) =>{
+                    console.log(resposta.user)
+                    SecureStore.setItemAsync('token',resposta.user.uid)
+                    navigation.navigate('Minha Poupancinha')
+                }).catch((error) => {
+                  console.log(error)
+                  setResultado('Falha na tentativa de cadastro. Verifique seus dados e tente novamente')
+                })   
         }
-      };
+    };
 
     return (
         <ImageBackground
@@ -54,15 +76,39 @@ const Register = ({ Navigation }) => {
         >
             <View style={styles.card}>
                 <Text style={styles.title}>Digite suas informações</Text>
-                <TextInput style={styles.input} placeholder="Nome"></TextInput>
-                <TextInput style={styles.input} placeholder="Sobrenome"></TextInput>
-                <TextInput style={styles.input} placeholder="E-mail"></TextInput>
-                <TextInput style={styles.input} placeholder="Data de nascimento"></TextInput>
-                <TextInput style={styles.input} secureTextEntry={true} placeholder="Senha"></TextInput>
-                <TextInput style={styles.input} secureTextEntry={true} placeholder="Repita a senha"></TextInput>
-                <TextInput style={styles.input} placeholder="Turma"></TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Nome"
+                    value={nome}></TextInput>
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Sobrenome"
+                    value={sobrenome}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="E-mail"
+                    value={email}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Data de nascimento"
+                    value={dataNascimento}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    secureTextEntry={true}
+                    placeholder="Senha"
+                    value={senha}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    secureTextEntry={true}
+                    placeholder="Repita a senha"
+                    value={repitaSenha}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Turma"
+                    value={turma}></TextInput>
                 <Text>{resultado}</Text>
-                <TouchableOpacity style={styles.buttonCriar} onPress={criarConta} >
+                <TouchableOpacity style={styles.buttonCriar} onPress={() => criarConta} >
                     <Text style={styles.buttonTextCriar}>Criar Conta</Text>
                 </TouchableOpacity>
             </View>
