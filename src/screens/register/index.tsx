@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { View, Text, ImageBackground, StyleSheet, Dimensions, TextInput, TouchableOpacity, ColorValue } from "react-native"
+import { View, Text, ImageBackground, StyleSheet, Dimensions, TextInput, TouchableOpacity, ColorValue, Button } from "react-native"
+import DatePicker from 'react-native-date-picker'
 import * as SecureStore from 'expo-secure-store'
 import axiosConfig from "../../config/axios";
 import firebaseApp from "../../config/firebase";
-import {createUserWithEmailAndPassword, initializeAuth} from 'firebase/auth'
+import { createUserWithEmailAndPassword, initializeAuth } from 'firebase/auth'
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -15,20 +16,20 @@ const getFontSize = (baseFontSize) => {
 
 
 
-const Register = ({ Navigation }) => {
+const Register = ({ navigation }) => {
 
     const [resultado, setResultado] = useState('Informe seus dados');
     const [nome, setNome] = useState('');
     const [sobrenome, setSobrenome] = useState('');
     const [email, setEmail] = useState('');
-    const [dataNascimento, setDataNascimanto] = useState('');
+    const [dataNascimento, setDataNascimanto] = useState(new Date());
     const [senha, SetSenha] = useState('');
     const [repitaSenha, SetRepitaSenha] = useState('');
     const [turma, setTurma] = useState('Teste');
-    const [tipoUser, setTipoUser] = useState('Aluno');
+    const [open, setOpen] = useState(false)
 
-    const criarConta = async ({navigation}) => {
-        if (nome == '' && sobrenome == '' && email == '' && dataNascimento == '' && senha == '' && repitaSenha == '' && turma == '') {
+    const criarConta = async () => {
+        if (nome == '' || sobrenome == '' || email == '' || senha == '' || repitaSenha == '' || turma == '') {
             setResultado('Preencha todos os campos corretamente');
             return
         } else if (senha != repitaSenha) {
@@ -42,30 +43,30 @@ const Register = ({ Navigation }) => {
                     dataNascimento: dataNascimento,
                     senha: senha,
                     turma: turma,
-                    tipoUsuario: tipoUser,
+                    tipoUsuario: 'Aluno',
                 });
 
                 // Verifique a resposta da API 
                 if (response.data) {
                     setResultado('Conta criada com sucesso.');
+                    const auth = initializeAuth(firebaseApp)
+                    createUserWithEmailAndPassword(auth, email, senha)
+                        .then((resposta) => {
+                            console.log(resposta.user)
+                            SecureStore.setItemAsync('token', resposta.user.uid)
+                            navigation.navigate('Minha Poupancinha')
+                        }).catch((error) => {
+                            console.log(error)
+                            setResultado('Falha ao cadastrar login. Verifique seus dados e tente novamente')
+                        })
 
-                    Navigation.navigate('Minha Poupancinha');
                 }
             } catch (error) {
                 // Em caso de erro
                 console.error('Erro ao criar a conta:', error);
                 setResultado('Erro ao criar a conta. Verifique seus dados e tente novamente.');
             }
-            const auth = initializeAuth(firebaseApp)
-            createUserWithEmailAndPassword(auth, email,senha)
-                .then((resposta) =>{
-                    console.log(resposta.user)
-                    SecureStore.setItemAsync('token',resposta.user.uid)
-                    navigation.navigate('Minha Poupancinha')
-                }).catch((error) => {
-                  console.log(error)
-                  setResultado('Falha na tentativa de cadastro. Verifique seus dados e tente novamente')
-                })   
+
         }
     };
 
@@ -79,36 +80,51 @@ const Register = ({ Navigation }) => {
                 <TextInput
                     style={styles.input}
                     placeholder="Nome"
+                    onChangeText={(text) => setNome(text)}
                     value={nome}></TextInput>
 
                 <TextInput
                     style={styles.input}
                     placeholder="Sobrenome"
+                    onChangeText={(text) => setSobrenome(text)}
                     value={sobrenome}></TextInput>
                 <TextInput
                     style={styles.input}
                     placeholder="E-mail"
+                    onChangeText={(text) => setEmail(text)}
                     value={email}></TextInput>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Data de nascimento"
-                    value={dataNascimento}></TextInput>
+                <Button title="Open" onPress={() => setOpen(true)} />
+                <DatePicker
+                    modal
+                    open={open}
+                    date={dataNascimento}
+                    onConfirm={(date) => {
+                        setOpen(false)
+                        setDataNascimanto(date)
+                    }}
+                    onCancel={() => {
+                        setOpen(false)
+                    }}
+                />                
                 <TextInput
                     style={styles.input}
                     secureTextEntry={true}
                     placeholder="Senha"
+                    onChangeText={(text) => SetSenha(text)}
                     value={senha}></TextInput>
                 <TextInput
                     style={styles.input}
                     secureTextEntry={true}
                     placeholder="Repita a senha"
+                    onChangeText={(text) => SetRepitaSenha(text)}
                     value={repitaSenha}></TextInput>
                 <TextInput
                     style={styles.input}
                     placeholder="Turma"
+                    onChangeText={(text) => setTurma(text)}
                     value={turma}></TextInput>
                 <Text>{resultado}</Text>
-                <TouchableOpacity style={styles.buttonCriar} onPress={() => criarConta} >
+                <TouchableOpacity style={styles.buttonCriar} onPress={criarConta} >
                     <Text style={styles.buttonTextCriar}>Criar Conta</Text>
                 </TouchableOpacity>
             </View>

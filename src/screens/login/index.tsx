@@ -99,11 +99,12 @@ const Login = ({ navigation }) => {
           <Text style={styles.buttonText}>Logar</Text>
         </TouchableOpacity>
 
-        <Text style={styles.ouText}>ou</Text>
+        {/*<Text style={styles.ouText}>ou</Text>
 
-        <TouchableOpacity style={styles.googleButton} /*onPress={() => loginGoogle}*/>
+        <TouchableOpacity style={styles.googleButton} onPress={() => loginGoogle}>
           <Text style={styles.buttonTextGoogle}>Entre usando Google</Text>
         </TouchableOpacity>
+        */}
 
         <TouchableOpacity style={styles.criarButton} onPress={() => navigation.navigate('Registrar')}>
           <Text style={styles.buttonTextCriar} >Não tem conta ainda?</Text>
