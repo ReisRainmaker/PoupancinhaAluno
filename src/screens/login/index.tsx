@@ -19,22 +19,23 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const logar = () => {
-    if (email == '' && password == '') {
+    if (email == '' || password == '') {
       setResultado('Digite login e senha');
+    } else {
+
+      //Login com firebase
+      const auth = initializeAuth(firebaseApp)
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((resposta) => {
+          console.log(resposta.user)
+          SecureStore.setItemAsync('token', resposta.user.uid)
+          navigation.navigate('Minha Poupancinha',{ aluno: email })
+        }).catch((error) => {
+          console.log(error)
+          setResultado('Usuário ou senha incorretos')
+        })
     }
-
-    //Login com firebase
-    const auth = initializeAuth(firebaseApp)
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then((resposta) => {
-        console.log(resposta.user)
-        SecureStore.setItemAsync('token', resposta.user.uid)
-        navigation.navigate('Minha Poupancinha')
-      }).catch((error) => {
-        console.log(error)
-        setResultado('falha ao realizar o login')
-      })
   };
   /*
   const loginGoogle = ({ navigation }) => {
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    height: 40,
+    fontSize: getFontSize(15),
     borderWidth: 1,
     borderRadius: 5,
     borderColor: 'gray',
@@ -157,6 +158,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   resultado: {
+    fontSize: getFontSize(13),
     color: baseColor[1],
     textAlign: 'center',
   },

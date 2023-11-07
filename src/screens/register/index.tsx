@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { View, Text, ImageBackground, StyleSheet, Dimensions, TextInput, TouchableOpacity, ColorValue, Button } from "react-native"
-import DatePicker from 'react-native-date-picker'
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import * as SecureStore from 'expo-secure-store'
 import axiosConfig from "../../config/axios";
 import firebaseApp from "../../config/firebase";
 import { createUserWithEmailAndPassword, initializeAuth } from 'firebase/auth'
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -22,7 +23,7 @@ const Register = ({ navigation }) => {
     const [nome, setNome] = useState('');
     const [sobrenome, setSobrenome] = useState('');
     const [email, setEmail] = useState('');
-    const [dataNascimento, setDataNascimanto] = useState(new Date());
+    const [dataNascimento, setDataNascimanto] = useState(new Date(1598051730000));
     const [senha, SetSenha] = useState('');
     const [repitaSenha, SetRepitaSenha] = useState('');
     const [turma, setTurma] = useState('Teste');
@@ -34,7 +35,11 @@ const Register = ({ navigation }) => {
             return
         } else if (senha != repitaSenha) {
             setResultado('As senhas digitadas estão diferentes')
-        } else {
+            return
+        } else if (senha.length > 6) {
+            setResultado('A senhadeve ter mais de 6 digitos')
+            return
+        }else {
             try {
                 const response = await axiosConfig.post('auth/register', {
                     name: nome,
@@ -70,12 +75,33 @@ const Register = ({ navigation }) => {
         }
     };
 
+
+
+    ///////////// Configurações date Piker /////////////
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate;
+        setDataNascimanto(currentDate);
+    };
+
+    const showMode = (currentMode) => {
+        DateTimePickerAndroid.open({
+            value: dataNascimento,
+            onChange,
+            mode: currentMode,
+            is24Hour: true,
+        });
+    };
+    const showDatepicker = () => {
+        showMode('date');
+    };
+
+
     return (
         <ImageBackground
             source={require('../../images/cedulas.jpg')}
             style={styles.container}
         >
-            <View style={styles.card}>
+            <SafeAreaView style={styles.card}>
                 <Text style={styles.title}>Digite suas informações</Text>
                 <TextInput
                     style={styles.input}
@@ -93,19 +119,6 @@ const Register = ({ navigation }) => {
                     placeholder="E-mail"
                     onChangeText={(text) => setEmail(text)}
                     value={email}></TextInput>
-                <Button title="Open" onPress={() => setOpen(true)} />
-                <DatePicker
-                    modal
-                    open={open}
-                    date={dataNascimento}
-                    onConfirm={(date) => {
-                        setOpen(false)
-                        setDataNascimanto(date)
-                    }}
-                    onCancel={() => {
-                        setOpen(false)
-                    }}
-                />                
                 <TextInput
                     style={styles.input}
                     secureTextEntry={true}
@@ -123,11 +136,18 @@ const Register = ({ navigation }) => {
                     placeholder="Turma"
                     onChangeText={(text) => setTurma(text)}
                     value={turma}></TextInput>
-                <Text>{resultado}</Text>
+
+                <TouchableOpacity style={styles.buttonDate} onPress={showDatepicker} >
+                    <Text style={styles.buttonTextDate}>Data de nascimento:</Text>
+                    <Text style={styles.buttonTextDate}>{dataNascimento.toLocaleString('pt-BR')}</Text>
+                </TouchableOpacity>
+
+                <Text style={styles.textResultado}>{resultado}</Text>
+
                 <TouchableOpacity style={styles.buttonCriar} onPress={criarConta} >
                     <Text style={styles.buttonTextCriar}>Criar Conta</Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
         </ImageBackground>
     )
 }
@@ -156,10 +176,24 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: 'white',
         borderRadius: 8,
-        height: 40,
         padding: 10,
         marginBottom: 10,
+        fontSize: getFontSize(16),
+        
     },
+
+    buttonDate: {
+        backgroundColor: baseColor[3],
+        padding: 15,
+        borderRadius: 8,
+        marginTop: 10,
+    },
+    buttonTextDate: {
+        color: 'black',
+        fontSize: getFontSize(14),
+        textAlign: 'center',
+    },
+
     buttonCriar: {
         backgroundColor: baseColor[5],
         padding: 15,
@@ -168,8 +202,14 @@ const styles = StyleSheet.create({
     },
     buttonTextCriar: {
         color: 'white',
-        fontSize: getFontSize(18),
+        fontSize: getFontSize(22),
         fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    textResultado: {
+        fontSize: getFontSize(16),
+        color: 'white',
+        marginBottom: 20,
         textAlign: 'center',
     },
 });

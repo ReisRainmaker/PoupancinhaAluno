@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground, ColorValue, Dimensions } from 'react-native';
-import Orientation from 'react-native-orientation-locker';
+import axiosConfig from '../../config/axios';
 
 const windowWidth = Dimensions.get('window').width;
 const getFontSize = (baseFontSize) => {
@@ -9,10 +9,30 @@ const getFontSize = (baseFontSize) => {
     return adjustedFontSize;
 };
 
-const Home = ({ navigation }) => {
-
+const Home = ({ route, navigation }) => {
+    const { aluno } = route.params;
+    const [alunoData, setAlunoData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [nomeAluno, setNomeAluno] = useState('');
-    const [saldoAluno, setSaldoAluno] = useState('');
+    const [saldoAluno, setSaldoAluno] = useState(null);
+
+    useEffect(() => {
+        const fetchAlunoData = async () => {
+          try {
+            const response = await axiosConfig.get(`home/${aluno}`);
+            const data = response.data;
+            setAlunoData(data);
+            setIsLoading(false);
+          } catch (error) {
+            console.error('Erro ao buscar informações do Pokémon:', error);
+            setIsLoading(false);
+          }
+        };
+    
+        if (!alunoData) {
+            fetchAlunoData(); 
+        }
+      }, [aluno, alunoData]);
 
 
     return (
@@ -27,13 +47,13 @@ const Home = ({ navigation }) => {
                         style={styles.logo}
                     />
                     <View>
-                        <Text style={styles.headerText}>Poupancinha do:</Text>
-                        <Text style={styles.headerName}>Nome do usuário</Text>
+                        <Text style={styles.headerText}>Poupancinha de</Text>
+                        <Text style={styles.headerName}>{nomeAluno}</Text>
                     </View>
                 </View>
                 <View style={styles.balanceContainer}>
                     <Text style={styles.balanceLabel}>Saldo disponível:</Text>
-                    <Text style={styles.balanceAmount}>R$ Pegar valor api</Text>
+                    <Text style={styles.balanceAmount}>R$ {saldoAluno}</Text>
                 </View>
                 <View style={styles.buttonsContainer}>
                     <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('Extrato')}>
