@@ -9,31 +9,75 @@ const getFontSize = (baseFontSize) => {
     return adjustedFontSize;
 };
 
-const Home = ({ route, navigation }) => {
-    const { aluno } = route.params;
+
+const Home = ({ navigation, route }) => {
+
+    const { email } = route.params;
+    const [userData, setUserData] = useState(null);
     const [alunoData, setAlunoData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [contaData, setContaData] = useState(null);
     const [nomeAluno, setNomeAluno] = useState('');
     const [saldoAluno, setSaldoAluno] = useState(null);
 
+    /////////////////////// Use efect do Get Usuário /////////////////////////
     useEffect(() => {
-        const fetchAlunoData = async () => {
-          try {
-            const response = await axiosConfig.get(`home/${aluno}`);
-            const data = response.data;
-            setAlunoData(data);
-            setIsLoading(false);
-          } catch (error) {
-            console.error('Erro ao buscar informações do Pokémon:', error);
-            setIsLoading(false);
-          }
-        };
-    
-        if (!alunoData) {
-            fetchAlunoData(); 
+        const getUserByEmail = async () => {
+            if (email) {
+                const response = await axiosConfig.get(`homeAluno/user/${email}`)
+                    .then((response) => {
+                        const data = response.data;
+                        setUserData(data);
+                        setNomeAluno(data.nome)
+                        console.log("Retorno do usuário", response.data)
+                    }).catch((error) => {
+                        console.error('Erro ao buscar informações do Usuário:', error);
+                    })
+            }
         }
-      }, [aluno, alunoData]);
+        if (!userData) {
+            getUserByEmail();
 
+        }
+    }, [email, userData, nomeAluno]);
+
+    /////////////////////// Use efect do Get Aluno /////////////////////////
+    useEffect(() => {
+        const getAlunoByUser = async () => {
+            if (userData) {
+                //console.log("entra no if da segunda chamada")
+                const response = await axiosConfig.get(`homeAluno/aluno/${userData.id}`)
+                    .then((response) => {
+                        const data = response.data;
+                        setAlunoData(data);
+                        console.log("Retorno do Aluno", response.data)
+                    }).catch((error) => {
+                        console.error('Erro ao buscar informações do Aluno:', error);
+                    })
+            }
+        }
+        if (userData && !alunoData) {
+            getAlunoByUser();
+        }
+    }, [userData, alunoData]);
+    /////////////////////// Use efect do Get Conta /////////////////////////
+    useEffect(() => {
+        const getContaByAluno = async () => {
+            if (alunoData) {
+                const response = await axiosConfig.get(`homeAluno/conta/${alunoData.idAluno}`)
+                    .then((response) => {
+                        const data = response.data;
+                        setContaData(data);
+                        setSaldoAluno(data.saldoAtual.toFixed(2))
+                        console.log("Retorno da conta", response.data)
+                    }).catch((error) => {
+                        console.error('Erro ao buscar informações da conta:', error);
+                    })
+            }
+        }
+        if (!contaData && alunoData) {
+            getContaByAluno();
+        }
+    }, [alunoData, contaData, saldoAluno]);
 
     return (
         <ImageBackground
@@ -56,7 +100,7 @@ const Home = ({ route, navigation }) => {
                     <Text style={styles.balanceAmount}>R$ {saldoAluno}</Text>
                 </View>
                 <View style={styles.buttonsContainer}>
-                    <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('Extrato')}>
+                    <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('Extrato', {conta: contaData})}>
                         <Text style={styles.buttonText1}>Extrato</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('Loja')}>
@@ -64,6 +108,9 @@ const Home = ({ route, navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button3} onPress={() => navigation.navigate('Jogos')}>
                         <Text style={styles.buttonText3}>Jogos</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('Login')}>
+                        <Text style={styles.buttonText4}>Sair</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -171,6 +218,19 @@ const styles = StyleSheet.create({
         width: '80%'
     },
     buttonText3: {
+        color: 'white',
+        fontSize: getFontSize(15),
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    button4: {
+        backgroundColor: baseColor[3],
+        padding: 15,
+        borderRadius: 20,
+        marginBottom: 20,
+        width: '80%'
+    },
+    buttonText4: {
         color: 'white',
         fontSize: getFontSize(15),
         fontWeight: 'bold',

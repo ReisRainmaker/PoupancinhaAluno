@@ -30,7 +30,8 @@ const Login = ({ navigation }) => {
         .then((resposta) => {
           console.log(resposta.user)
           SecureStore.setItemAsync('token', resposta.user.uid)
-          navigation.navigate('Minha Poupancinha',{ aluno: email })
+          SecureStore.setItemAsync('email', resposta.user.email)
+          navigation.navigate('Minha Poupancinha', { email: email })
         }).catch((error) => {
           console.log(error)
           setResultado('Usuário ou senha incorretos')
@@ -69,7 +70,9 @@ const Login = ({ navigation }) => {
     SecureStore.getItemAsync('token')
       .then((token) => {
         if (token != null) {
-          navigation.navigate('Minha Poupancinha');
+          SecureStore.getItemAsync('email').then((email) => {
+            navigation.navigate('Minha Poupancinha', { email: email });
+          })
         }
       });
   }, []);

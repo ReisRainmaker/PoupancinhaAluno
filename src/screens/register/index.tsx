@@ -19,6 +19,8 @@ const getFontSize = (baseFontSize) => {
 
 const Register = ({ navigation }) => {
 
+
+
     const [resultado, setResultado] = useState('Informe seus dados');
     const [nome, setNome] = useState('');
     const [sobrenome, setSobrenome] = useState('');
@@ -28,6 +30,13 @@ const Register = ({ navigation }) => {
     const [repitaSenha, SetRepitaSenha] = useState('');
     const [turma, setTurma] = useState('Teste');
     const [open, setOpen] = useState(false)
+
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    }
 
     const criarConta = async () => {
         if (nome == '' || sobrenome == '' || email == '' || senha == '' || repitaSenha == '' || turma == '') {
@@ -39,7 +48,7 @@ const Register = ({ navigation }) => {
         } else if (senha.length > 6) {
             setResultado('A senhadeve ter mais de 6 digitos')
             return
-        }else {
+        } else {
             try {
                 const response = await axiosConfig.post('auth/register', {
                     name: nome,
@@ -53,13 +62,14 @@ const Register = ({ navigation }) => {
 
                 // Verifique a resposta da API 
                 if (response.data) {
-                    setResultado('Conta criada com sucesso.');
+                    // se a api conseguiu cadastrar, vamos cadastrar no firebase
                     const auth = initializeAuth(firebaseApp)
                     createUserWithEmailAndPassword(auth, email, senha)
                         .then((resposta) => {
                             console.log(resposta.user)
                             SecureStore.setItemAsync('token', resposta.user.uid)
-                            navigation.navigate('Minha Poupancinha')
+                            setResultado('Conta criada com sucesso, aguarde e será encaminhado para a tela inicial.')
+                            navigation.navigate('Minha Poupancinha', { email: email })
                         }).catch((error) => {
                             console.log(error)
                             setResultado('Falha ao cadastrar login. Verifique seus dados e tente novamente')
@@ -139,7 +149,11 @@ const Register = ({ navigation }) => {
 
                 <TouchableOpacity style={styles.buttonDate} onPress={showDatepicker} >
                     <Text style={styles.buttonTextDate}>Data de nascimento:</Text>
-                    <Text style={styles.buttonTextDate}>{dataNascimento.toLocaleString('pt-BR')}</Text>
+                    <Text style={styles.buttonTextDate}>{dataNascimento.toLocaleDateString('pt-BR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    })}</Text>
                 </TouchableOpacity>
 
                 <Text style={styles.textResultado}>{resultado}</Text>
@@ -179,7 +193,7 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         fontSize: getFontSize(16),
-        
+
     },
 
     buttonDate: {
