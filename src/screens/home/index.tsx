@@ -23,7 +23,7 @@ const Home = ({ navigation, route }) => {
     useEffect(() => {
         const getUserByEmail = async () => {
             if (email) {
-                const response = await axiosConfig.get(`homeAluno/user/${email}`)
+                const response = await axiosConfig.get(`home/userEmail/${email}`)
                     .then((response) => {
                         const data = response.data;
                         setUserData(data);
@@ -45,7 +45,7 @@ const Home = ({ navigation, route }) => {
         const getAlunoByUser = async () => {
             if (userData) {
                 //console.log("entra no if da segunda chamada")
-                const response = await axiosConfig.get(`homeAluno/aluno/${userData.id}`)
+                const response = await axiosConfig.get(`home/aluno/${userData.id}`)
                     .then((response) => {
                         const data = response.data;
                         setAlunoData(data);
@@ -63,7 +63,7 @@ const Home = ({ navigation, route }) => {
     useEffect(() => {
         const getContaByAluno = async () => {
             if (alunoData) {
-                const response = await axiosConfig.get(`homeAluno/conta/${alunoData.idAluno}`)
+                const response = await axiosConfig.get(`home/contaAluno/${alunoData.idAluno}`)
                     .then((response) => {
                         const data = response.data;
                         setContaData(data);

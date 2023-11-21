@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View, ImageBackground, ColorValue, TouchableOpacity, Dimensions } from 'react-native';
 import * as SecureStore from 'expo-secure-store'
 import firebaseApp from '../../config/firebase';
-import { initializeAuth, signInWithEmailAndPassword, GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth'
+import { initializeAuth, signInWithEmailAndPassword, } from 'firebase/auth'
 
 
 const windowWidth = Dimensions.get('window').width;
