@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground, ColorValue, Dimensions } from 'react-native';
 import axiosConfig from '../../config/axios';
+import * as SecureStore from 'expo-secure-store'
 
 const windowWidth = Dimensions.get('window').width;
 const getFontSize = (baseFontSize) => {
@@ -69,6 +70,7 @@ const Home = ({ navigation, route }) => {
                         setContaData(data);
                         setSaldoAluno(data.saldoAtual.toFixed(2))
                         console.log("Retorno da conta", response.data)
+
                     }).catch((error) => {
                         console.error('Erro ao buscar informações da conta:', error);
                     })
@@ -103,7 +105,7 @@ const Home = ({ navigation, route }) => {
                     <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('Extrato', {conta: contaData})}>
                         <Text style={styles.buttonText1}>Extrato</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('Loja')}>
+                    <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('Loja', {aluno: alunoData})}>
                         <Text style={styles.buttonText2}>Compras</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button3} onPress={() => navigation.navigate('Jogos')}>
