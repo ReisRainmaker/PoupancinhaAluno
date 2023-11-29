@@ -19,12 +19,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/images/cedulas.jpg",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.reisrainmaker.PoupancinhaAluno"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "93169530-2a7e-4459-a722-64aadb43ddae"
+      }
     }
   }
 }
