@@ -58,7 +58,7 @@ const Balance = ({ Navigation, route }) => {
                     {
                         movimentacoesConta.length <= 0 && (
                             <View style={styles.linhasTableInicial}>
-                                <Text>Nenhuma movimentação na conta ainda.</Text>
+                                <Text style={styles.textSaldoTitle}>Nenhuma movimentação na conta ainda.</Text>
                             </View>
                         )
                     }
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     containerTabela2e3: {
         alignSelf: "center",
         borderRadius: 10,
-        backgroundColor: baseColor[1],/////////////////  Mudar /////////////////
+        backgroundColor: baseColor[0],/////////////////  Mudar /////////////////
         minWidth: '96%',
         maxWidth: '98%',
         padding: 10,

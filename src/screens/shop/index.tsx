@@ -96,7 +96,10 @@ const Shop = ({ Navigation, route }) => {
                             >{produtoItem.nome}</Card.Title>
                             <Card.Divider />
                             <Card.Image
-                                style={{ padding: 0 }}
+                                style={{ 
+                                    padding: 0 ,
+                                    height: 350
+                                }}
                                 source={{
                                     uri:
                                         produtoItem.imagem,
@@ -170,7 +173,7 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
         borderRadius: 14,
-        backgroundColor: '#aaaaaa',
+        backgroundColor: baseColor[6],
         padding: 15,
         marginTop: 15,
 
