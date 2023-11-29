@@ -52,40 +52,48 @@ const Register = ({ navigation }) => {
             }
             await axiosConfig.get(`home/userEmail/${email}`)
             setResultado('Este E-mail já cadastrado.');
-        } catch(error) {
-                    try {
-                        const response = await axiosConfig.post('auth/register', {
-                            name: nome,
-                            sobreNome: sobrenome, 
-                            email: email,
-                            dataNascimento: dataNascimento,
-                            senha: senha,
-                            turma: turma,
-                            tipoUsuario: 'Aluno',
-                        });
 
-                        // Verifique a resposta da API 
-                        if (response.data) {
-                            // se a api conseguiu cadastrar, vamos cadastrar no firebase
-                            const auth = initializeAuth(firebaseApp)
-                            createUserWithEmailAndPassword(auth, email, senha)
-                                .then((resposta) => {
-                                    console.log(resposta.user)
-                                    SecureStore.setItemAsync('token', resposta.user.uid)
-                                    setResultado('Conta criada com sucesso, aguarde e será encaminhado para a tela inicial.')
-                                    navigation.navigate('Minha Poupancinha', { email: email })
-                                }).catch((error) => {
-                                    console.log(error)
-                                    setResultado('Falha ao cadastrar login. Verifique seus dados e tente novamente')
-                                })
+        } catch (error) {
+            try {
+                await axiosConfig.get(`turma/nomeTurma/${turma}`)
 
-                        }
-                    } catch (error) {
-                        // Em caso de erro
-                        console.error('Erro ao criar a conta:', error);
-                        setResultado('Erro ao criar a conta. Verifique seus dados e tente novamente.');
+                try {
+                    const response = await axiosConfig.post('auth/register', {
+                        name: nome,
+                        sobreNome: sobrenome,
+                        email: email,
+                        dataNascimento: dataNascimento,
+                        senha: senha,
+                        turma: turma,
+                        tipoUsuario: 'Aluno',
+                    });
+
+                    // Verifique a resposta da API 
+                    if (response.data) {
+                        // se a api conseguiu cadastrar, vamos cadastrar no firebase
+                        const auth = initializeAuth(firebaseApp)
+                        createUserWithEmailAndPassword(auth, email, senha)
+                            .then((resposta) => {
+                                console.log(resposta.user)
+                                SecureStore.setItemAsync('token', resposta.user.uid)
+                                setResultado('Conta criada com sucesso, aguarde e será encaminhado para a tela inicial.')
+                                navigation.navigate('Minha Poupancinha', { email: email })
+                            }).catch((error) => {
+                                console.log(error)
+                                setResultado('Falha ao cadastrar login. Verifique seus dados e tente novamente')
+                            })
+
                     }
-                
+                } catch (error) {
+                    // Em caso de erro
+                    console.error('Erro ao criar a conta:', error);
+                    setResultado('Erro ao criar a conta. Verifique seus dados e tente novamente.');
+                }
+
+            } catch (error) {
+                setResultado('Turma Inesistente');
+            }
+
         }
     }
 
@@ -94,83 +102,83 @@ const Register = ({ navigation }) => {
 
 
 
-///////////// Configurações date Piker /////////////
-const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setDataNascimento(currentDate);
-};
+    ///////////// Configurações date Piker /////////////
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate;
+        setDataNascimento(currentDate);
+    };
 
-const showMode = (currentMode) => {
-    DateTimePickerAndroid.open({
-        value: dataNascimento,
-        onChange,
-        mode: currentMode,
-        is24Hour: true,
-    });
-};
-const showDatepicker = () => {
-    showMode('date');
-};
+    const showMode = (currentMode) => {
+        DateTimePickerAndroid.open({
+            value: dataNascimento,
+            onChange,
+            mode: currentMode,
+            is24Hour: true,
+        });
+    };
+    const showDatepicker = () => {
+        showMode('date');
+    };
 
 
-return (
-    <ImageBackground
-        source={require('../../images/cedulas.jpg')}
-        style={styles.container}
-    >
-        <SafeAreaView style={styles.card}>
-            <Text style={styles.title}>Digite suas informações</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Nome"
-                onChangeText={(text) => setNome(text)}
-                value={nome}></TextInput>
+    return (
+        <ImageBackground
+            source={require('../../images/cedulas.jpg')}
+            style={styles.container}
+        >
+            <SafeAreaView style={styles.card}>
+                <Text style={styles.title}>Digite suas informações</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Nome"
+                    onChangeText={(text) => setNome(text)}
+                    value={nome}></TextInput>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Sobrenome"
-                onChangeText={(text) => setSobrenome(text)}
-                value={sobrenome}></TextInput>
-            <TextInput
-                style={styles.input}
-                placeholder="E-mail"
-                onChangeText={(text) => setEmail(text)}
-                value={email}></TextInput>
-            <TextInput
-                style={styles.input}
-                secureTextEntry={true}
-                placeholder="Senha"
-                onChangeText={(text) => SetSenha(text)}
-                value={senha}></TextInput>
-            <TextInput
-                style={styles.input}
-                secureTextEntry={true}
-                placeholder="Repita a senha"
-                onChangeText={(text) => SetRepitaSenha(text)}
-                value={repitaSenha}></TextInput>
-            <TextInput
-                style={styles.input}
-                placeholder="Turma"
-                onChangeText={(text) => setTurma(text)}
-                value={turma}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Sobrenome"
+                    onChangeText={(text) => setSobrenome(text)}
+                    value={sobrenome}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="E-mail"
+                    onChangeText={(text) => setEmail(text)}
+                    value={email}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    secureTextEntry={true}
+                    placeholder="Senha"
+                    onChangeText={(text) => SetSenha(text)}
+                    value={senha}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    secureTextEntry={true}
+                    placeholder="Repita a senha"
+                    onChangeText={(text) => SetRepitaSenha(text)}
+                    value={repitaSenha}></TextInput>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Turma"
+                    onChangeText={(text) => setTurma(text)}
+                    value={turma}></TextInput>
 
-            <TouchableOpacity style={styles.buttonDate} onPress={showDatepicker} >
-                <Text style={styles.buttonTextDate}>Data de nascimento:</Text>
-                <Text style={styles.buttonTextDate}>{dataNascimento.toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                })}</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonDate} onPress={showDatepicker} >
+                    <Text style={styles.buttonTextDate}>Data de nascimento:</Text>
+                    <Text style={styles.buttonTextDate}>{dataNascimento.toLocaleDateString('pt-BR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    })}</Text>
+                </TouchableOpacity>
 
-            <Text style={styles.textResultado}>{resultado}</Text>
+                <Text style={styles.textResultado}>{resultado}</Text>
 
-            <TouchableOpacity style={styles.buttonCriar} onPress={criarConta} >
-                <Text style={styles.buttonTextCriar}>Criar Conta</Text>
-            </TouchableOpacity>
-        </SafeAreaView>
-    </ImageBackground>
-)
+                <TouchableOpacity style={styles.buttonCriar} onPress={criarConta} >
+                    <Text style={styles.buttonTextCriar}>Criar Conta</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
+        </ImageBackground>
+    )
 }
 
 const baseColor: ColorValue[] = ['#ACBFC5', '#578EA2', '#B8D4DB', '#CDD3AD', '#8EB282', '#EAC376', '#D2996E'];

@@ -1,6 +1,6 @@
 import { Button, Card, Icon } from "@rneui/base";
 import { useEffect, useState } from "react";
-import { View, Text, ImageBackground, StyleSheet, Dimensions, Image, ScrollView } from "react-native"
+import { View, Text, ImageBackground, StyleSheet, Dimensions, Image, ScrollView, ColorValue } from "react-native"
 import axiosConfig from "../../config/axios";
 
 const windowWidth = Dimensions.get('window').width;
@@ -53,24 +53,23 @@ const Shop = ({ Navigation, route }) => {
 
         getProdutoByProfessor();
     }, [professor]);
-    //////////// Pegar nome do professor pelo idUser do professor
-    useEffect(() => {
-        const getProfessorUser = async () => {
-            try {
-                if (professor) {
-                    const response = await axiosConfig.get(`home/userId/${professor.userId}`);
-                    const data = response.data;
-                    setUserProfessor(data);
-                    console.log("Retorno do usuário Professor", response.data);
-                }
-            } catch (error) {
-                console.error('Erro ao buscar usuário do professor:', error);
-            }
-        };
+    // //////////// Pegar nome do professor pelo idUser do professor
+    // useEffect(() => {
+    //     const getProfessorUser = async () => {
+    //         try {
+    //             if (professor) {
+    //                 const response = await axiosConfig.get(`home/idUser/${professor.idUser}`);
+    //                 const data = response.data;
+    //                 setUserProfessor(data);
+    //                 console.log("Retorno do usuário Professor", response.data);
+    //             }
+    //         } catch (error) {
+    //             console.error('Erro ao buscar usuário do professor:', error);
+    //         }
+    //     };
 
-        getProfessorUser();
-    }, [professor]);
-
+    //     getProfessorUser();
+    // }, [professor]);
 
 
     return (
@@ -79,7 +78,7 @@ const Shop = ({ Navigation, route }) => {
             style={styles.container}
         >
             <ScrollView style={styles.fundoScroll}>
-                <Text style={styles.textTitle}>Lojinha da (Professora)</Text>
+                <Text style={styles.textTitle}>Lojinha da turma </Text>
 
 
                 {
@@ -135,6 +134,7 @@ const Shop = ({ Navigation, route }) => {
         </ImageBackground>
     )
 }
+const baseColor: ColorValue[] = ['#ACBFC5', '#578EA2', '#B8D4DB', '#CDD3AD', '#8EB282', '#EAC376', '#D2996E'];
 
 const styles = StyleSheet.create({
     container: {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         minWidth: '96%',
         maxWidth: '98%',
-        backgroundColor: '#ACBFC5',/////////////////  Mudar /////////////////
+        backgroundColor: baseColor[5],/////////////////  Mudar /////////////////
         margin: 2,
         padding: 10,
         borderRadius: 10,
@@ -158,8 +158,8 @@ const styles = StyleSheet.create({
     textTitle: {
         fontSize: getFontSize(50),
         fontWeight: '700',
-        color: '#123456',//////////////////    Mudar    /////////////////////
-        backgroundColor: '#ab234a',//////////////////    Mudar    /////////////////////
+        color: '#EEEEEE',//////////////////    Mudar    /////////////////////
+        backgroundColor: baseColor[5],//////////////////    Mudar    /////////////////////
         borderRadius: 14,
         alignSelf: 'center',
         width: '96%',

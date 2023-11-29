@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity, ScrollView } from "react-native"
+import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity, ScrollView, ColorValue } from "react-native"
 import axiosConfig from "../../config/axios";
 import { format } from 'date-fns';
 
@@ -97,6 +97,7 @@ const Balance = ({ Navigation, route }) => {
         </ImageBackground>
     )
 }
+const baseColor: ColorValue[] = ['#ACBFC5', '#578EA2', '#B8D4DB', '#CDD3AD', '#8EB282', '#EAC376', '#D2996E'];
 
 const styles = StyleSheet.create({
     container: {
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        backgroundColor: '#ACBFC5',/////////////////  Mudar /////////////////
+        backgroundColor: baseColor[1],/////////////////  Mudar /////////////////
         borderRadius: 15,
         height: '24%',
         lineHeight: '1cm',
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         minWidth: '96%',
         maxWidth: '98%',
-        backgroundColor: '#ACBFC5',/////////////////  Mudar /////////////////
+        backgroundColor: baseColor[1],/////////////////  Mudar /////////////////
         margin: 2,
         padding: 10,
         borderRadius: 10,
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     containerTabela2e3: {
         alignSelf: "center",
         borderRadius: 10,
-        backgroundColor: '#ACB333',/////////////////  Mudar /////////////////
+        backgroundColor: baseColor[1],/////////////////  Mudar /////////////////
         minWidth: '96%',
         maxWidth: '98%',
         padding: 10,

@@ -46,7 +46,7 @@ const Home = ({ navigation, route }) => {
         const getAlunoByUser = async () => {
             if (userData) {
                 //console.log("entra no if da segunda chamada")
-                const response = await axiosConfig.get(`home/aluno/${userData.id}`)
+                const response = await axiosConfig.get(`home/aluno/${userData.idUser}`)
                     .then((response) => {
                         const data = response.data;
                         setAlunoData(data);
