@@ -98,7 +98,7 @@ const Shop = ({ Navigation, route }) => {
                             <Card.Image
                                 style={{ 
                                     padding: 0 ,
-                                    height: 350
+                                    height: 200
                                 }}
                                 source={{
                                     uri:

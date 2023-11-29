@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, ImageBackground, StyleSheet, Dimensions, TextInput, TouchableOpacity, ColorValue, Button } from "react-native"
+import { View, Text, ImageBackground, StyleSheet, Dimensions, TextInput, TouchableOpacity, ColorValue, Button, TouchableWithoutFeedback, Platform, Keyboard, KeyboardAvoidingView } from "react-native"
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import * as SecureStore from 'expo-secure-store'
 import axiosConfig from "../../config/axios";
@@ -122,62 +122,71 @@ const Register = ({ navigation }) => {
 
 
     return (
-        <ImageBackground
-            source={require('../../images/cedulas.jpg')}
-            style={styles.container}
+
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
         >
-            <SafeAreaView style={styles.card}>
-                <Text style={styles.title}>Digite suas informações</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Nome"
-                    onChangeText={(text) => setNome(text)}
-                    value={nome}></TextInput>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ImageBackground
+                    source={require('../../images/cedulas.jpg')}
+                    style={styles.container}
+                >
+                    <SafeAreaView style={styles.card}>
+                        <Text style={styles.title}>Digite suas informações</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Nome"
+                            onChangeText={(text) => setNome(text)}
+                            value={nome}></TextInput>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Sobrenome"
-                    onChangeText={(text) => setSobrenome(text)}
-                    value={sobrenome}></TextInput>
-                <TextInput
-                    style={styles.input}
-                    placeholder="E-mail"
-                    onChangeText={(text) => setEmail(text)}
-                    value={email}></TextInput>
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry={true}
-                    placeholder="Senha"
-                    onChangeText={(text) => SetSenha(text)}
-                    value={senha}></TextInput>
-                <TextInput
-                    style={styles.input}
-                    secureTextEntry={true}
-                    placeholder="Repita a senha"
-                    onChangeText={(text) => SetRepitaSenha(text)}
-                    value={repitaSenha}></TextInput>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Turma"
-                    onChangeText={(text) => setTurma(text)}
-                    value={turma}></TextInput>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Sobrenome"
+                            onChangeText={(text) => setSobrenome(text)}
+                            value={sobrenome}></TextInput>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="E-mail"
+                            onChangeText={(text) => setEmail(text)}
+                            value={email}></TextInput>
+                        <TextInput
+                            style={styles.input}
+                            secureTextEntry={true}
+                            placeholder="Senha"
+                            onChangeText={(text) => SetSenha(text)}
+                            value={senha}></TextInput>
+                        <TextInput
+                            style={styles.input}
+                            secureTextEntry={true}
+                            placeholder="Repita a senha"
+                            onChangeText={(text) => SetRepitaSenha(text)}
+                            value={repitaSenha}></TextInput>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Turma"
+                            onChangeText={(text) => setTurma(text)}
+                            value={turma}></TextInput>
 
-                <TouchableOpacity style={styles.buttonDate} onPress={showDatepicker} >
-                    <Text style={styles.buttonTextDate}>Data de nascimento:</Text>
-                    <Text style={styles.buttonTextDate}>{dataNascimento.toLocaleDateString('pt-BR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                    })}</Text>
-                </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonDate} onPress={showDatepicker} >
+                            <Text style={styles.buttonTextDate}>Data de nascimento:</Text>
+                            <Text style={styles.buttonTextDate}>{dataNascimento.toLocaleDateString('pt-BR', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            })}</Text>
+                        </TouchableOpacity>
 
-                <Text style={styles.textResultado}>{resultado}</Text>
+                        <Text style={styles.textResultado}>{resultado}</Text>
 
-                <TouchableOpacity style={styles.buttonCriar} onPress={criarConta} >
-                    <Text style={styles.buttonTextCriar}>Criar Conta</Text>
-                </TouchableOpacity>
-            </SafeAreaView>
-        </ImageBackground>
+                        <TouchableOpacity style={styles.buttonCriar} onPress={criarConta} >
+                            <Text style={styles.buttonTextCriar}>Criar Conta</Text>
+                        </TouchableOpacity>
+                    </SafeAreaView>
+                </ImageBackground>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView >
+
     )
 }
 
@@ -194,7 +203,7 @@ const styles = StyleSheet.create({
         backgroundColor: baseColor[1],
         padding: 20,
         borderRadius: 10,
-        width: '80%',
+       // width: '80%',
     },
     title: {
         fontSize: getFontSize(24),
@@ -227,7 +236,7 @@ const styles = StyleSheet.create({
         backgroundColor: baseColor[5],
         padding: 15,
         borderRadius: 8,
-        marginTop: 10,
+        //marginTop: 10,
     },
     buttonTextCriar: {
         color: 'white',
